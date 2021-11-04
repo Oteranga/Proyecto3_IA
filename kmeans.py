@@ -2,35 +2,45 @@ import random
 import aux as a
 
 class Kmeans:
-    cluster_groups = []
+    cluster_groups = dict()
     
-    def __init__(self,x_features,k):
-        self.x_features = x_features
+    def __init__(self,data,k):
+        self.data = data
         self.k = k
-        self.rows = len(self.x_features)
+        self.rows = len(data)
+        self.columns = len(data.columns)
 
-    def kmeans(self):
+    def kmeans_algorithm(self):
         random_indexes = [random.randint(0, self.rows-1) for i in range(self.k)]
-        centroids_prev = [self.x_features.iloc[i,:].values.tolist() for i in random_indexes]
-        centroids_next = []
-        for i in range(self.k):
-            self.cluster_groups[i] = []
-        self.assign_points_to_clusters(centroids_prev)
+        centroids = [self.data.iloc[i,0:self.columns-1].values.tolist() for i in random_indexes]
+        diff_centroids = True
+        for centroid in centroids:
+            empty_list = []
+            #self.cluster_groups[centroid] = empty_list
+            self.cluster_groups.setdefault(centroid,[])
+        self.assign_points_to_clusters(centroids)
         
-        while centroids_prev!=centroids_next:
-            new_centroid = []
-            for i,group in enumerate(self.cluster_groups):
+        while diff_centroids:
+            new_centroids = []
+            for group in self.cluster_groups:
+                new_centroid = []
                 samples = self.cluster_groups[group]
                 size = len(samples)
-                for j,sample in enumerate(samples):
+                for sample in samples:
                     new_centroid += a.distance(group,sample)
                 new_centroid /= size
-                centroids_next[i] = new_centroid
+                new_centroids.append(new_centroid)
+            if new_centroids != centroids:
+                centroids = new_centroids
+                self.assign_points_to_clusters(centroids)
+            else:
+                diff_centroids = False
+        return self.cluster_groups
     
     def assign_points_to_clusters(self,centroids):
         for i in range(self.rows):
-            row_list = self.x_features.iloc[i,:].values.tolist()
-            distances = [a.distance(row_list,centroids[j].values.tolist()) for j in range(k)]
+            row_list = self.data.iloc[i,:].values.tolist()
+            distances = [a.distance(row_list,centroids[j].values.tolist()) for j in range(self.k)]
             min_value = min(distances)
             min_index = distances.index(min_value)
-            self.cluster_groups[min_index].append(i)
+            self.cluster_groups[min_index].append(row_list)

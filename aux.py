@@ -4,7 +4,7 @@ import numpy as np
 
 def distance(centroid,current_row):
     distances = []
-    for i in range(len(centroid)):
+    for i in range(len(centroid)-1):
         distances[i] += pow(centroid[i] - current_row[i], 2)
     return [math.sqrt(distance) for distance in distances]
 

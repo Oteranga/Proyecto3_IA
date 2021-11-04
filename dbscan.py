@@ -1,6 +1,6 @@
 import aux as a
 
-def dbscan(df, r, minPoints):
+def dbscan(df, r, min_points):
     df = a.makePairs(df)
     cluster = 0
     list_clusters = []
@@ -8,7 +8,7 @@ def dbscan(df, r, minPoints):
         if point[1] != None: #With label
             continue
         neighbors = a.rangeQuery(df, point[0], r)
-        if len(neighbors) < minPoints: #Atypical values
+        if len(neighbors) < min_points: #Atypical values
             point[1] = False
             continue
         cluster += 1
@@ -22,7 +22,7 @@ def dbscan(df, r, minPoints):
                 continue
             new_neighbors = a.rangeQuery(df, val[0], r)
             val[1] = cluster
-            if len(new_neighbors) < minPoints:
+            if len(new_neighbors) < min_points:
                 continue
             new_cluster += new_cluster + new_neighbors
         list_clusters.append(new_cluster)
