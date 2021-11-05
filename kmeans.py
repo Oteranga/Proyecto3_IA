@@ -13,7 +13,6 @@ class Kmeans:
 
     def kmeans_algorithm(self):
         random_indexes = random.sample(range(self.rows), self.k)
-        #random_indexes = [random.randint(0, self.rows-1) for i in range(self.k)]
         centroids = [self.data.iloc[i,:].values.tolist() for i in random_indexes]
         diff_centroids = True
         self.assign_centroids_to_clusters(centroids)
@@ -31,11 +30,9 @@ class Kmeans:
                         new_centroid = (a.distance(centroid,sample))
                     else:
                         new_centroid = np.add(new_centroid, a.distance(centroid,sample))
-                        #new_centroid += (a.distance(centroid,sample))
                 new_centroid[:] = [x / size for x in new_centroid]
                 new_centroids.append(new_centroid)
             
-            #if new_centroids != centroids:
             if((len(new_centroids) == len(centroid)) 
             and (all(i in centroids for i in new_centroids))):
                 centroids = new_centroids
@@ -61,5 +58,5 @@ class Kmeans:
     
     def print_clusters(self):
         for i in range(self.k):
-            print("Cluster ",i,":")
+            print("Cluster",i,":")
             self.cluster_groups[i].print_samples()

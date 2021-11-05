@@ -9,12 +9,14 @@ def parse_data(filename1 = 'dataset_tissue.txt', filename2 = 'classes.txt'):
     df.rename(columns={'Unnamed: 0':'ROW_NAME'}, inplace=True)
     col_num = df.columns.size
     df = df.T
-    x_features = df.iloc[1:col_num,:]
+    
     y_values = pd.read_csv(filename2, delimiter = ",")
     y_values.rename(columns={'x':'tissue'}, inplace=True)
-    y_values = y_values.iloc[:,1]
-    data = pd.concat([x_features,y_values.reindex(x_features.index)],axis=1)
-    return data,x_features,y_values
+    y_values = y_values.iloc[:,-1].values.tolist()
+    
+    full_data = df.iloc[1:col_num,:]
+    full_data['tissue'] = y_values
+    return full_data
 
 def reduce_dim(df):
     x_std = StandardScaler().fit_transform(df)

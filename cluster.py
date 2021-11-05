@@ -8,5 +8,5 @@ class Cluster:
     
     def print_samples(self):
         size = len(self.samples[0])
-        for samples in self.samples:
-            print(samples[size-1])
+        for sample in self.samples:
+            print(sample[size-1])
