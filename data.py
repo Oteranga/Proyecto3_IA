@@ -7,15 +7,14 @@ from sklearn.preprocessing import StandardScaler
 def parse_data(filename1 = 'dataset_tissue.txt', filename2 = 'classes.txt'):
     df = pd.read_csv(filename1, delimiter = ",")
     df.rename(columns={'Unnamed: 0':'ROW_NAME'}, inplace=True)
-    df = df.T
     col_num = df.columns.size
-    x_features = df.iloc[:,1:col_num-1]
+    df = df.T
+    x_features = df.iloc[1:col_num,:]
     y_values = pd.read_csv(filename2, delimiter = ",")
     y_values.rename(columns={'x':'tissue'}, inplace=True)
     y_values = y_values.iloc[:,1]
-    data = pd.concat([x_features,y_values],axis=1)
-    print(len(y_values),",",len(x_features),",",len(data))
-    return data,x_features, y_values
+    data = pd.concat([x_features,y_values.reindex(x_features.index)],axis=1)
+    return data,x_features,y_values
 
 def reduce_dim(df):
     x_std = StandardScaler().fit_transform(df)
