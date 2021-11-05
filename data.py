@@ -12,11 +12,12 @@ def parse_data(filename1 = 'dataset_tissue.txt', filename2 = 'classes.txt'):
     
     y_values = pd.read_csv(filename2, delimiter = ",")
     y_values.rename(columns={'x':'tissue'}, inplace=True)
-    y_values = y_values.iloc[:,-1].values.tolist()
+    y_list = y_values.iloc[:,-1].values.tolist()
     
-    full_data = df.iloc[1:col_num,:]
-    full_data['tissue'] = y_values
-    return full_data
+    x_features = df.iloc[1:col_num,:]
+    full_data = x_features.copy()
+    full_data['tissue'] = y_list
+    return full_data, x_features
 
 def reduce_dim(df):
     x_std = StandardScaler().fit_transform(df)
