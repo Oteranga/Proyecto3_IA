@@ -2,7 +2,9 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
+import seaborn as sns
 from sklearn.preprocessing import StandardScaler
+
 
 def parse_data(filename1 = 'dataset_tissue.txt', filename2 = 'classes.txt'):
     df = pd.read_csv(filename1, delimiter = ",")
@@ -19,28 +21,28 @@ def parse_data(filename1 = 'dataset_tissue.txt', filename2 = 'classes.txt'):
     full_data['tissue'] = y_list
     return full_data, x_features
 
-def reduce_dim(df):
-    x_std = StandardScaler().fit_transform(df)
-    print(x_std)
-    print(x_std.mean(axis=0))
+def reduce_dim(df,num_components):
+    #FIRST WAY
+    y = df.iloc[:,-1].values.tolist()
     
-    pca_data = PCA(n_components=2)
-    principal_components = pca_data.fit_transform(x_std)
-    principal_df = pd.DataFrame(data = principal_components, columns = ['principal component 1', 'principal component 2'])
-    print(principal_df.tail())
-    print('Explained variation per principal component: {}'.format(pca_data.explained_variance_ratio_))
-    plt.figure()
-    plt.figure(figsize=(10,10))
-    plt.xticks(fontsize=12)
-    plt.yticks(fontsize=14)
-    plt.xlabel('Principal Component - 1',fontsize=20)
-    plt.ylabel('Principal Component - 2',fontsize=20)
-    plt.title("Principal Component Analysis of Tissues",fontsize=20)
-    targets = ['Component 2', 'Component 1']
-    colors = ['r', 'g']
-    for target, color in zip(targets,colors):
-        indices_to_keep = df['label'] == target
-        plt.scatter(principal_df.loc[indices_to_keep, 'principal component 1']
-                , principal_df.loc[indices_to_keep, 'principal component 2'], c = color, s = 50)
-
-    plt.legend(targets,prop={'size': 15})
+    #SECOND WAY
+    """ pca = PCA(n_components=num_components)
+    pc = pca.fit_transform(df.iloc[:,:-1])
+    columns_list = []
+    for i in range(num_components):
+        name = "Principal component"+str(i)
+        columns_list.append(name)
+    pc_df = pd.DataFrame(data = pc, columns = columns_list)
+    pc_df['y'] = df.iloc[:,-1].values.tolist()
+    print(pc_df.head())
+    print('Variation per principal component: {}'.format(pca.explained_variance_ratio_)) """
+    
+    """ plt.figure(figsize=(16,7))
+    sns.scatterplot(
+        x="Principal component 1", y="Principal component 2",
+        hue="y",
+        palette=sns.color_palette("hls", 7),
+        data=pc_df,
+        legend="full",
+        alpha=0.3
+    ) """
