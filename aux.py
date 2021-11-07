@@ -3,10 +3,10 @@ from sklearn.neighbors import KDTree
 import numpy as np
 
 def distance(centroid,current_row):
-    distances = []
+    distance = 0
     for i in range(len(centroid) - 1):
-        distances.append(pow(centroid[i] - current_row[i], 2))
-    return [math.sqrt(distance) for distance in distances]
+        distance += pow(centroid[i] - current_row[i], 2)
+    return math.sqrt(distance)
 
 def make_pairs(df):
     df = df.values.tolist()
