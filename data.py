@@ -1,10 +1,14 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from seaborn.palettes import color_palette
 from sklearn.decomposition import PCA
 import seaborn as sns
 from sklearn.preprocessing import StandardScaler
-
+import pandas as pd
+import aux as a
+from mpl_toolkits import mplot3d
+plt.style.use('ggplot')
 
 def parse_data(filename1 = 'dataset_tissue.txt', filename2 = 'classes.txt'):
     df = pd.read_csv(filename1, delimiter = ",")
@@ -22,27 +26,62 @@ def parse_data(filename1 = 'dataset_tissue.txt', filename2 = 'classes.txt'):
     return full_data, x_features
 
 def reduce_dim(df,num_components):
-    #FIRST WAY
-    y = df.iloc[:,-1].values.tolist()
+    x = df.iloc[:,:-1]
+    y = df.iloc[:,-1]
     
-    #SECOND WAY
-    """ pca = PCA(n_components=num_components)
-    pc = pca.fit_transform(df.iloc[:,:-1])
-    columns_list = []
-    for i in range(num_components):
-        name = "Principal component"+str(i)
-        columns_list.append(name)
-    pc_df = pd.DataFrame(data = pc, columns = columns_list)
-    pc_df['y'] = df.iloc[:,-1].values.tolist()
-    print(pc_df.head())
-    print('Variation per principal component: {}'.format(pca.explained_variance_ratio_)) """
+    scaler = StandardScaler()
+    scaler.fit(x)
+    x_scaled = scaler.transform(x)
+    pca = PCA(n_components=num_components)
+    pca.fit(x_scaled)
+    x_pca = pca.transform(x_scaled)
+    print("Variance explained by all principal components =",sum(pca.explained_variance_ratio_*100))
+    #print(pca.explained_variance_ratio_*100)
+    #print(np.cumsum(pca.explained_variance_ratio_*100))
     
-    """ plt.figure(figsize=(16,7))
-    sns.scatterplot(
-        x="Principal component 1", y="Principal component 2",
-        hue="y",
-        palette=sns.color_palette("hls", 7),
-        data=pc_df,
-        legend="full",
-        alpha=0.3
-    ) """
+    plt.plot(np.cumsum(pca.explained_variance_ratio_*100))
+    plt.title("Variance for "+str(num_components)+" components")
+    plt.xlabel('# of components')
+    plt.ylabel('Explained variance')
+    plt.savefig("plots/var_for_"+str(num_components))
+    
+    """ for i in range(num_components):
+        print("Variance explained by the First " + str(i+1) + " principal component(s) =",np.cumsum(pca.explained_variance_ratio_*100)[i]) """
+    
+    plotting(num_components,x_pca,y)
+
+
+def plotting(num_components,x_pca,y):
+    y_list = y.values.tolist()
+    target_names = a.get_unique_values(y_list)
+    labels,new_y = convert_tissue_to_num(y_list,target_names)
+    
+    if num_components==2:
+        plt.figure(figsize=(10,7))
+        sns.scatterplot(x=x_pca[:,0],y=x_pca[:,1],s=70,hue=y_list,palette=color_palette("hls",7),alpha=0.6)
+        plt.xlabel("First principal component")
+        plt.ylabel("Second principal component")
+        plt.savefig("plots/2d_plot")
+    
+    if num_components==3:
+        plt.figure(figsize=(12,8))
+        ax = plt.axes(projection='3d')
+        sc = ax.scatter(x_pca[:,0],x_pca[:,1],x_pca[:,2],c=new_y,s=50,alpha=0.6)
+        ax.legend(target_names)
+        plt.legend(*sc.legend_elements(), bbox_to_anchor=(1.05, 1), loc=2)
+        ax.set_xlabel("First principal component")
+        ax.set_ylabel("Second principal component")
+        ax.set_zlabel("Third principal component")
+        plt.savefig("plots/3d_plot")
+
+
+def convert_tissue_to_num(y,target_names):
+    dic = dict()
+    new_y = []
+    for i in range(len(target_names)):
+        dic[target_names[i]] = i+1
+    
+    for i in range(len(y)):
+        new_y.append(dic[y[i]])
+    
+    return list(dic.values()),new_y
