@@ -35,11 +35,12 @@ def reduce_dim(df,num_components):
     pca = PCA(n_components=num_components)
     pca.fit(x_scaled)
     x_pca = pca.transform(x_scaled)
-    print("Variance explained by all principal components =",sum(pca.explained_variance_ratio_*100))
-    #print(pca.explained_variance_ratio_*100)
-    #print(np.cumsum(pca.explained_variance_ratio_*100))
     
-    plt.plot(np.cumsum(pca.explained_variance_ratio_*100))
+    cumsum_variance = np.around(np.cumsum(pca.explained_variance_ratio_*100),2)
+    np.savetxt("files/explained_variance.txt",pca.explained_variance_ratio_*100,delimiter=",")
+    np.savetxt("files/cumsum_explained_variance.txt",cumsum_variance,delimiter=",")
+    
+    plt.plot([*range(1,num_components+1,1)],cumsum_variance,marker='o')
     plt.title("Variance for "+str(num_components)+" components")
     plt.xlabel('# of components')
     plt.ylabel('Explained variance')
