@@ -22,9 +22,13 @@ class Cluster:
         return counter
 
 class Pair:
-    def __init__(self, sample):
-        self.cluster = 0
+    def __init__(self, sample, tissue):
+        self.cluster = -1
         self.data = sample
+        self.type = tissue
 
-    def setCluster(self, newCluster):
-        self.cluster = newCluster
+    def set_cluster(self, new_cluster):
+        self.cluster = new_cluster
+    
+    def print_pair(self):
+        print("{",self.cluster,",",self.type,"}")

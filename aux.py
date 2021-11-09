@@ -9,26 +9,26 @@ def distance(centroid,current_row):
         distance += pow(centroid[i] - current_row[i], 2)
     return math.sqrt(distance)
 
-def make_pairs(df):
-    df = df.values.tolist()
+def make_pairs(x_features, y_list):
+    x_list = x_features.values.tolist()
     pairs = []
-    for i in range(len(df)):
-        newObject = cl.Pair(df[i])
-        pairs.append(newObject)
+    for i in range(len(x_list)):
+        new_object = cl.Pair(x_list[i], y_list[i])
+        pairs.append(new_object)
     return pairs
 
-def range_query(df, point, radius):
-    new_df = []
-    for set in df:
-        new_df.append(set.data)
-    new_arrays = np.array(new_df)
+def range_query(x_pairs, y_list, point, radius):
+    new_pairs = []
+    for set in x_pairs:
+        new_pairs.append(set.data)
+    new_arrays = np.array(new_pairs)
     tree = KDTree(new_arrays, leaf_size = 20)
     indices = tree.query_radius(np.array(point.data).reshape(1, -1), r = radius)
     neighbors = []
     for n in indices[0].tolist():
-        newObject = cl.Pair(new_arrays[n])
-        newObject.setCluster(df[n].cluster)
-        neighbors.append(newObject)
+        new_object = cl.Pair(new_arrays[n], y_list[n])
+        new_object.set_cluster(x_pairs[n].cluster)
+        neighbors.append(new_object)
     return neighbors
 
 def get_unique_values(values):

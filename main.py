@@ -8,13 +8,17 @@ from matplotlib import pyplot as plt
 #full_data,x_features,y_values = d.parse_data()
 full_data, x_features = d.parse_data()
 #d.reduce_dim(full_data,2)
-""" kmeans_obj = km.Kmeans(full_data,7)
-cluster_groups = kmeans_obj.kmeans_algorithm()
-kmeans_obj.print_clusters() """
 
-dbscan_cluster = dbs.dbscan(x_features, 100, 40)
-for val in dbscan_cluster:
-    print(val)
+method_type = "dbscan"
+
+if method_type == "kmeans":
+    kmeans_obj = km.Kmeans(full_data,7)
+    #cluster_groups = kmeans_obj.kmeans_algorithm()
+    #kmeans_obj.print_clusters()
+elif method_type == "dbscan":
+    dbscan_obj = dbs.DBSCAN(full_data, 90, 10)
+    dbscan_obj.dbscan_algorithm()
+    #dbscan_obj.print_clusters()
 
 """ plt.title("Hierarchical Clustering Dendrogram")
 agglomerative_cluster = ag.agglomerativeClustering(x_features)
