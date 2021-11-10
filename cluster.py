@@ -32,3 +32,8 @@ class Pair:
     
     def print_pair(self):
         print("{",self.cluster,",",self.type,"}")
+    
+    def __eq__(self, other):
+        comparison = self.data == other.data
+        equal_arrays = comparison.all()
+        return equal_arrays

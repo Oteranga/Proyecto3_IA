@@ -13,18 +13,18 @@ method_type = "dbscan"
 
 if method_type == "kmeans":
     kmeans_obj = km.Kmeans(full_data,7)
-    #cluster_groups = kmeans_obj.kmeans_algorithm()
-    #kmeans_obj.print_clusters()
+    kmeans_obj.kmeans_algorithm()
+    kmeans_obj.print_clusters()
 elif method_type == "dbscan":
     dbscan_obj = dbs.DBSCAN(full_data, 90, 10)
     dbscan_obj.dbscan_algorithm()
-    #dbscan_obj.print_clusters()
-
-""" plt.title("Hierarchical Clustering Dendrogram")
-agglomerative_cluster = ag.agglomerativeClustering(x_features)
-ag.plotDendogram(agglomerative_cluster, truncate_mode="level")
-plt.xlabel("Number of points in node (or index of point if no parenthesis).")
-plt.show() """
+    dbscan_obj.print_clusters()
+elif method_type == "dendogram":
+    plt.title("Hierarchical Clustering Dendrogram")
+    agglomerative_cluster = ag.agglomerativeClustering(x_features)
+    ag.plotDendogram(agglomerative_cluster, truncate_mode="level")
+    plt.xlabel("Number of points in node (or index of point if no parenthesis).")
+    plt.show()
 
 print("Done")
 
