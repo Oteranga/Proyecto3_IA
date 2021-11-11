@@ -1,6 +1,4 @@
 import random
-
-from seaborn.palettes import color_palette
 import aux as a
 import cluster as cl
 import pandas as pd
@@ -69,7 +67,7 @@ class Kmeans:
             print("Cluster",i,":")
             self.cluster_groups[i].print_samples()
     
-    def plot_clusters(self):
+    def plot_clusters(self,num_name):
         temp = np.zeros((self.k, len(self.column_names)))
         dfs = pd.DataFrame(temp,columns=self.column_names)
         for i in range(self.k):
@@ -77,4 +75,4 @@ class Kmeans:
             for tissue in counter:
                 dfs.at[i,tissue] = counter[tissue]
         dfs.plot.bar(rot=0)
-        plt.show()
+        plt.savefig("plots/plot_kmeans"+str(num_name))

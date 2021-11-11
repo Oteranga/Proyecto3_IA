@@ -22,16 +22,16 @@ class Cluster:
         return counter
 
 class Pair:
-    def __init__(self, sample, tissue):
+    def __init__(self, sample, id):
         self.cluster = -1
         self.data = sample
-        self.type = tissue
+        self.id = id
 
     def set_cluster(self, new_cluster):
         self.cluster = new_cluster
     
-    def print_pair(self):
-        print("{",self.cluster,",",self.type,"}")
+    def print_pair(self,y_list):
+        print("{",self.cluster,",",y_list[self.id],"}")
     
     def __eq__(self, other):
         comparison = self.data == other.data

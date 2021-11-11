@@ -1,6 +1,9 @@
 from matplotlib.pyplot import contour
 import aux as a
-
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+import collections
 class DBSCAN:
     list_clusters = []
     
@@ -10,16 +13,21 @@ class DBSCAN:
         self.y_list = df.iloc[:,-1].values.tolist()
         self.r = r
         self.min_points = min_points
-        self.x_pairs = a.make_pairs(self.x_features,self.y_list)
+        self.x_pairs = a.make_pairs(self.x_features)
+        self.column_names = a.get_unique_values(df.iloc[:,-1].values.tolist())
 
     def dbscan_algorithm(self):
         cluster = 0
-        for point in self.x_pairs:
+        pos = 0
+        while pos!=len(self.x_pairs)-1:
+        #for point in self.x_pairs:
+            point = self.x_pairs[pos]
             if point.cluster != -1: #With label
                 continue
-            neighbors = a.range_query(self.x_pairs, self.y_list, point, self.r)
+            neighbors = a.range_query(self.x_pairs, point, self.r)
             if len(neighbors) < self.min_points: #Atypical values
                 point.cluster = 0
+                pos += 1
                 continue
             cluster += 1
             point.cluster = cluster
@@ -35,7 +43,7 @@ class DBSCAN:
                 val.cluster = cluster
             elif val.cluster != -1:
                 continue
-            new_neighbors = a.range_query(self.x_pairs, self.y_list, val, self.r)
+            new_neighbors = a.range_query(self.x_pairs, val, self.r)
             val.cluster = cluster
             if len(new_neighbors) < self.min_points:
                 continue
@@ -68,5 +76,23 @@ class DBSCAN:
             print("Cluster "+str(i+1))
             size += len(cluster)
             for val in cluster:
-                val.print_pair()
+                val.print_pair(self.y_list)
         print(size)
+    
+    def plot_clusters(self,num_name):
+        num_clusters = len(self.list_clusters)
+        temp = np.zeros((num_clusters, len(self.column_names)))
+        dfs = pd.DataFrame(temp,columns=self.column_names)
+        for i in range(num_clusters):
+            counter = self.get_frequency(self.list_clusters[i])
+            for tissue in counter:
+                dfs.at[i,tissue] = counter[tissue]
+        dfs.plot.bar(rot=0)
+        plt.savefig("plots/plot_dbscan"+str(num_name))
+    
+    def get_frequency(self,samples):
+        tissues = []
+        for sample in samples:
+            tissues.append(self.y_list[sample.id])
+        counter = collections.Counter(tissues)
+        return counter

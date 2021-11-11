@@ -9,15 +9,15 @@ def distance(centroid,current_row):
         distance += pow(centroid[i] - current_row[i], 2)
     return math.sqrt(distance)
 
-def make_pairs(x_features, y_list):
+def make_pairs(x_features):
     x_list = x_features.values.tolist()
     pairs = []
     for i in range(len(x_list)):
-        new_object = cl.Pair(x_list[i], y_list[i])
+        new_object = cl.Pair(x_list[i], i)
         pairs.append(new_object)
     return pairs
 
-def range_query(x_pairs, y_list, point, radius):
+def range_query(x_pairs, point, radius):
     new_pairs = []
     for set in x_pairs:
         new_pairs.append(set.data)
@@ -26,7 +26,7 @@ def range_query(x_pairs, y_list, point, radius):
     indices = tree.query_radius(np.array(point.data).reshape(1, -1), r = radius)
     neighbors = []
     for n in indices[0].tolist():
-        new_object = cl.Pair(new_arrays[n], y_list[n])
+        new_object = cl.Pair(new_arrays[n], x_pairs[n].id)
         new_object.set_cluster(x_pairs[n].cluster)
         neighbors.append(new_object)
     return neighbors
